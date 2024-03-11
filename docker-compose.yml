@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  service1:
+    build:
+      dockerfile: Dockerfile
+      context: ./service_1
+    ports:
+      - '8001:8000'
+    volumes:
+      - './service_1:/app'
