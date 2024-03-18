@@ -15,18 +15,24 @@ class Transcription(BaseModel):
 
 class TranscriptionModel:
     def __init__(self):
-        self._transcription_model = whisper.load_model("medium")
+        self._transcription_model = whisper.load_model("small")
 
     def api_transcribe(self, audio_file_path, translate=False):
         if not os.path.exists(audio_file_path):
+            print("Path does not exist")
             return None
         start_time = datetime.now()
         captured_output = StringIO()
+
+        print("captured output:", captured_output.read())
+        print("Path:", audio_file_path)
         with redirect_stdout(captured_output):
             if translate:
                 result = self._transcription_model.transcribe(audio_file_path, task='translate')
             else:
                 result = self._transcription_model.transcribe(audio_file_path)
+        print("captured output:", captured_output.read())
+
         end_time = datetime.now()
         time_taken = (end_time - start_time).total_seconds()
         try:

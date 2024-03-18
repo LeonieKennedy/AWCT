@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  ui:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - '3000:3000'
+
+  whisper:
+    build:
+      dockerfile: Dockerfile
+      context: ./service_2
+    ports:
+      - '8001:8000'
