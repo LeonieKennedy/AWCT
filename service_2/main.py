@@ -28,10 +28,9 @@ model = TranscriptionModel()
 
 
 @app.post("/transcribe", response_model=Transcription)
-def transcribe(audio_file: UploadFile, translate: str) -> Transcription:
+def transcribe(audio_file: UploadFile, translate: bool) -> Transcription:
     print("Running")
-    print("header:", audio_file.headers)
-    translate = bool(translate)
+    print("translate:", translate)
     tmp_path = save_upload_file_tmp(audio_file)
     print("temp saved")
     result = model.api_transcribe(str(tmp_path), translate)

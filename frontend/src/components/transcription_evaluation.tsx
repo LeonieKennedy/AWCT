@@ -37,11 +37,9 @@ type PropType = {
   data: any; // replace 'any' with a more specific type if you can
 }
 
-export default function Evaluation({data}: PropType) {
+export default function TranscriptionResult({data}: PropType) {
 
   return (
-
-
     <EvaluationContainer>
       <h2>Result</h2>
       <EvalutionWrapper >

@@ -1,6 +1,5 @@
 import React, { ChangeEvent, ChangeEventHandler, useState } from 'react'
 import styled from 'styled-components';
-import Evaluation from '../components/evaluation';
 import ButtonComponent from '../components/button';
 import { SelectorComponent } from '../components/selector';
 import { translateOptions } from '../data';
@@ -83,13 +82,14 @@ const Label = styled.label`
     <div style={{ display: 'flex', height: '100%', width: '100%', alignItems: 'start'}}>
     <LeftContainer>
       <h1>Transcribe any audio file in any language!</h1>
-      <h2 style={{color: '#04346C'}}>We have created an audio translation/transcription tool<br/> to help you translate and/or transcribe any of your audio files.</h2>
+      <h2 style={{color: '#04346C'}}>We have created an translation/transcription tool<br/> to help you translate and/or transcribe any of your text and audio files.</h2>
       <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start'}}>
-        <ButtonComponent size={'20%'} buttonLabel="Login"></ButtonComponent>
-        <NavLink to="/transcribe_audio" style={{width: '50%'}}>
-        <ButtonComponent size={'40%'} buttonLabel="Try Demo"></ButtonComponent>
+        <NavLink to="/translate_text" style={{width: '50%'}}>
+            <ButtonComponent size={'100%'} buttonLabel="Translate Text"></ButtonComponent>
         </NavLink>
-
+        <NavLink to="/transcribe_audio" style={{width: '50%'}}>
+            <ButtonComponent size={'100%'} buttonLabel="Transcribe Audio"></ButtonComponent>
+        </NavLink>
       </div>
     </LeftContainer>
 

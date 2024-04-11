@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from nllb_model import Model, FTLangDetect, Translation
 from pydantic import BaseModel
+from langauge_mappings import load_language_mappings
 
 app = FastAPI()
 
@@ -17,14 +18,14 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"])
 
 model = Model()
 lang_detect = FTLangDetect()
-
+langauge_options = {}
 
 @app.get("/get_languages")
 def get_languages(shortcode: bool = False) -> list[str]:
@@ -38,9 +39,14 @@ def detect_language(text: str, k: int = 1, shortcode: bool = False) -> dict[str,
 
 @app.post("/translate", response_model=Translation)
 def translate(text: str, target_lang: str = "eng_Latn", source_lang: str = None) -> Translation:
-    return model.translate(text, target_lang, source_lang)
+    language_options = get_language_code_mapping()
+
+    return model.translate(text, language_options[target_lang], language_options[source_lang])
 
 
 @app.get("/language_code_mapping")
 def get_language_code_mapping() -> dict[str, str]:
-    return model.get_language_code_mapping()
+    global langauge_options
+    if langauge_options == {}:
+        langauge_options = load_language_mappings()
+    return langauge_options

@@ -2,15 +2,12 @@ import React, { ChangeEvent, ChangeEventHandler, useState } from 'react'
 import styled from 'styled-components';
 import ButtonComponent from '../components/button';
 import { SelectorComponent } from '../components/selector';
-import { translateOptions } from '../data';
+import { languageOptions } from '../data';
 import { InputComponent } from '../components/input';
 import { useNavigate } from "react-router-dom";
-import Checkbox from '@mui/material/Checkbox';
 import logo from '../assets/logo.jpg';
 import rightLogo from '../assets/right_logo.png';
-import TranscriptionResult from '../components/transcription_evaluation';
-import FormControlLabel from "@mui/material/FormControlLabel";
-
+import TranslationResult from '../components/translation_evaluation';
 
 const MainContainer = styled.div`
   min-height: 100vh;
@@ -52,45 +49,50 @@ const Label = styled.label`
 `;
 
 
- const TranscribeAudio: React.FC = () => {
-  const [translate, setTranslate] = useState(false);
+ const TranslateText: React.FC = () => {
+  const [text, setText] = useState<string>('text');
+  const [target, setTarget] = useState<string>('eng_Latn');
+  const [source, setSource] = useState<string>('Unknown');
+  const [language_choices, language_choices_setOutput] = useState([])
 
   const [onFileChange, setOnFileChange] = useState<File | null>(null);
   const [isSumitted, setIsSumitted] = useState(false);
 
   const [evaluationData, setEvaluationData] = useState<any>('');
 
-  const handleChangeTranslate = (e: React.ChangeEvent<any>) => setTranslate(e.target.value);
+
+  const handleChangeSource = (e: React.ChangeEvent<HTMLSelectElement>) => setSource(e.target.value);
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value);
+  const handleChangeTarget = (e: React.ChangeEvent<HTMLSelectElement>) => setTarget(e.target.value);
 
   const navigate = useNavigate();
 
-  const uploadFileHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files;
-    if (file) {
-      setOnFileChange(file[0]);
-    }
+  const get_language_mapping = () => {
+    const response = fetch('http://0.0.0.0:8003/language_code_mapping')
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        language_choices_setOutput(data)
+        setChange(true);
+      })
   }
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    console.log(`translate: ${translate}`);
+    console.log(`text: ${text}`);
+    console.log(`target_lang: ${target}`);
+    console.log(`source_lang: ${source}`);
 
-    const formData = new FormData();
-    if (onFileChange !== null) {
-      formData.append('audio_file', onFileChange);
-    }
+    const url = 'http://localhost:8003/translate';
+    const queryParams = `?text=${text}&target_lang=${target}&source_lang=${source}`;
 
-
-    const url = 'http://localhost:8002/transcribe';
-    const queryParams = `?translate=${translate}`;
-
-      try {
+    try {
       const response = await fetch(url + queryParams, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
         },
-        body: formData,
         mode: 'cors',
       });
 
@@ -126,31 +128,33 @@ const Label = styled.label`
 
 
     <FormContainer>
-      <h2>Transcribe Audio</h2>
+      <h2>Translate Text</h2>
+      {get_language_mapping()}
       <Form onSubmit={handleSubmit}>
-
-        <FormControlLabel
-          control={<Checkbox name="translate" checked={translate} onChange={handleChangeTranslate} />}
-          label="Translate Audio"
-        />
         <Label>
-            Please upload your audio file.
-            <input
-              id="file-input"
-              type="file"
-              accept=".flac"
-              onChange={uploadFileHandler}
-            />
+          Source Language:
+          <SelectorComponent options={Object.keys(language_choices)} handleChange={handleChangeSource} />
         </Label>
+
+        <Label>
+          Text:
+          <InputComponent inputValue={text} handleChange={handleChangeText} />
+        </Label>
+
+        <Label>
+          Target Language:
+          <SelectorComponent options={languageOptions} handleChange={handleChangeTarget} />
+        </Label>
+
         <ButtonComponent buttonLabel={isSumitted ? "Submitted" : "Send Data"}></ButtonComponent>
       </Form>
     </FormContainer>
 
     <ContentContainer>
-      <TranscriptionResult data={evaluationData}  />
+      <TranslationResult data={evaluationData}  />
     </ContentContainer>
   </MainContainer>
   )
  }
 
-export default TranscribeAudio;
+export default TranslateText;
