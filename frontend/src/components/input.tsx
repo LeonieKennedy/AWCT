@@ -19,14 +19,14 @@ export const Input = styled.input`
 export const InputComponent: React.FC<{
   inputValue?: number | string, 
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
-  readOnly?: boolean  // Added readOnly prop here
+  readOnly?: boolean 
 }> = ({ inputValue, handleChange, readOnly = false }) => (
   <Input
     id="fname"
     name="fname"
     defaultValue={inputValue}
     onChange={handleChange}
-    readOnly={readOnly}  // Applied readOnly prop to the input
+    readOnly={readOnly} 
     step="0.01"
   />
 );

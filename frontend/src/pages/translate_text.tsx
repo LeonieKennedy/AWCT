@@ -76,12 +76,10 @@ const TranslateText: React.FC = () => {
   }, []);
 
   const handleChangeSource = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log("Source language selected:", e.target.value); // Debugging log
     setSource(e.target.value);
   };
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value);
   const handleChangeTarget = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log("Target language selected:", e.target.value); // Debugging log
     setTarget(e.target.value);
   };
 

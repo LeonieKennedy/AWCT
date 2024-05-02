@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// Update your styled component to include disabled styling if needed
 export const Button = styled.button<{ $size?: string, disabled?: boolean }>`
     width: ${props => props.$size || '40%'};
     height: 40px;

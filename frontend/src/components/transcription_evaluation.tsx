@@ -27,11 +27,11 @@ const Label = styled.label`
 `;
 
 type PropType = {
-  data: any; // replace 'any' with a more specific type if you can
+  data: any; 
 }
 
 export default function TranscriptionResult({ data }: PropType) {
-  console.log('Data received:', data); // This will show what data is being passed in.
+  console.log('Data received:', data);
   
   const transcription = data && data.transcription ? data.transcription : "No transcription available.";
 
