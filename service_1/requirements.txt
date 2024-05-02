@@ -7,4 +7,8 @@ wget
 fasttext-wheel
 transformers
 nltk
+<<<<<<< HEAD
 html5lib
+=======
+html5lib
+>>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce

@@ -16,6 +16,7 @@ export const Input = styled.input`
     width: 100%;
 `;
 
+<<<<<<< HEAD
 export const InputComponent: React.FC<{
   inputValue?: number | string, 
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
@@ -30,3 +31,8 @@ export const InputComponent: React.FC<{
     step="0.01"
   />
 );
+=======
+export const InputComponent: React.FC<{inputValue?: number | string, handleChange?: (e:React.ChangeEvent<HTMLInputElement>) => void }> = ({inputValue, handleChange}) => (
+    <Input id="fname" name="fname" defaultValue={inputValue} onChange={handleChange} step="0.01" />
+);
+>>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce

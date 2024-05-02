@@ -1,4 +1,14 @@
+<<<<<<< HEAD
 I changed multiple things like porting, including everything into to docker-compose
 file, made some changes along the way, so it would work. The database is basic, but
 functional, not much security implemnted. Also the frontend for the profile page
 is not the best, I tried to whip up something after spending a lot of time on thebackend.
+=======
+        <NavLink to="/translate_text" style={{width: '50%'}}>
+            <ButtonComponent size={'100%'} buttonLabel="Translate Text"></ButtonComponent>
+        </NavLink>
+
+
+                <Route path="translate_text" element={<TranslateText />} />
+import TranslateText from './pages/translate_text';
+>>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce

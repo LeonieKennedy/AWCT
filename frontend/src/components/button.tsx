@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+<<<<<<< HEAD
 export const Button = styled.button<{ $size?: string, disabled?: boolean }>`
     width: ${props => props.$size || '40%'};
     height: 40px;
@@ -24,3 +25,27 @@ const ButtonComponent: React.FC<{ buttonLabel: string, size?: string, disabled?:
 }
 
 export default ButtonComponent;
+=======
+export const Button = styled.button<{$size?: string}>`
+    width: ${props => props.$size ||'40%' };
+    height: 40px;
+    flex: 0 0 auto;
+    border-color: rgb(207, 217, 222);
+    background-color: "white";
+    color: "black";
+    display: flex;
+    align-items: center;
+    margin: 1rem;
+`;
+
+const ButtonComponent: React.FC<{ buttonLabel: string, size?: string
+    }> = ({buttonLabel, size}) => {
+    return (
+        <Button $size={size}>
+            {buttonLabel}
+        </Button>
+    )
+}
+
+export default ButtonComponent
+>>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
