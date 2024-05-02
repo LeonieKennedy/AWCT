@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+  ui:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - '3000:3000'
+    networks:
+      - awct_network
+
+  whisper:
+    build:
+      dockerfile: Dockerfile
+      context: ./service_2
+    ports:
+      - '8001:8001'
+    networks:
+      - awct_network
+
+  nllb:
+    build:
+      dockerfile: Dockerfile
+      context: ./service_1
+    ports:
+      - '8000:8000'
+    networks:
+      - awct_network
+
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    networks:
+      - awct_network
+
+  data:
+    build:
+      dockerfile: Dockerfile
+      context: ./service_3
+    ports:
+      - '8002:8002'
+    networks:
+      - awct_network
+
+networks:
+  awct_network:
+    name: awct_network
+    driver: bridge

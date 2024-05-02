@@ -1,0 +1,4 @@
+I changed multiple things like porting, including everything into to docker-compose
+file, made some changes along the way, so it would work. The database is basic, but
+functional, not much security implemnted. Also the frontend for the profile page
+is not the best, I tried to whip up something after spending a lot of time on thebackend.
