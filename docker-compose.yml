@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  ui:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+
+whisper:
+    build:
+      dockerfile: Dockerfile
+      context: ./service_2
+    ports:
+      - '8001:8000'
+      
+  fastapi:
+    build:
+      context: ./service_2
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    volumes:
+      - ./service_2:/app
+    depends_on:
+      - redis
+    
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=my-password
+      - REDIS_PORT=6379
+    volumes: 
+      - redis:/data
+volumes:
+  redis:
+    driver: local

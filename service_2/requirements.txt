@@ -1,0 +1,9 @@
+fastapi
+redis
+requests
+uvicorn
+python-multipart
+aioredis
+ffmpeg
+transformers
+openai-whisper
