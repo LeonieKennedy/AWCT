@@ -14,10 +14,12 @@ Users are then able to save their translations and transcriptions, so that they 
 ```commandline
 sudo docker compose up
 ```
-This command will build 5 docker containers, that are all linked together.
+This command will build 5 docker containers, that are all linked together. The build will typically take a few minutes, and will be faster using GPU.
 
 Once all of the containers are built and running, navigate to the web address:
 http://localhost:3000
+
+The first translation/transcription, may take a couple of minutes, but afterwards, it will be faster. It will also be faster running on the GPU rather than CPU.
 
 ## Contributors
 - Leonie Kennedy 
