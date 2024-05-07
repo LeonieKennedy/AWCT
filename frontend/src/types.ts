@@ -1,4 +1,5 @@
 export interface Translation {
+    id: string;
     text: string;
     sourceLang: string;
     targetLang: string;
@@ -6,6 +7,7 @@ export interface Translation {
   }
   
   export interface Transcription {
+    id: string;
     transcription: string;
   }
   

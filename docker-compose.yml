@@ -34,6 +34,17 @@ services:
     networks:
       - awct_network
 
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: awct_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+    networks:
+      - awct_network
+
   data:
     build:
       dockerfile: Dockerfile
@@ -43,7 +54,21 @@ services:
     networks:
       - awct_network
 
+  user_data:
+    build:
+      dockerfile: Dockerfile
+      context: ./service_4
+    depends_on:
+      - postgres
+    networks:
+      - awct_network
+    ports:
+      - '8003:8003' 
+
 networks:
   awct_network:
     name: awct_network
     driver: bridge
+
+volumes:
+  postgres_data:

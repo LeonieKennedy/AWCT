@@ -1,190 +1,196 @@
-<<<<<<< HEAD
-import React, { ChangeEvent, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import ButtonComponent from '../components/button';
+import Sidebar from '../components/Sidebar';
+import MainContent from '../components/MainContent';
+import StyledProfileContainer from '../components/ProfileContainer';
+import { Translation, Transcription } from '../types';
 import { NavLink } from 'react-router-dom';
-import logo from '../assets/logo.jpg';
-import rightLogo from '../assets/right_logo.png';
-=======
-import React, { ChangeEvent, ChangeEventHandler, useState } from 'react'
-import styled from 'styled-components';
-import ButtonComponent from '../components/button';
-import { SelectorComponent } from '../components/selector';
-import { translateOptions } from '../data';
-import { InputComponent } from '../components/input';
-import logo from '../assets/logo.jpg';
-import rightLogo from '../assets/right_logo.png';
-import { NavLink } from 'react-router-dom';
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
+import { useAuth } from '../contexts/AuthContext';
 
-const MainContainer = styled.div`
-  height: 100vh;
-  width: 100vw;
-  align-items: center;
-  flex-wrap: wrap;
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
+const Header = styled.h1`
+  font-size: 36px;
+  color: #0056b3;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
-<<<<<<< HEAD
-const NavigationContainer = styled.div`
-  flex-basis: 30%;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+const SubHeader = styled.h2`
+  font-size: 26px;
   color: #04346C;
+  margin-bottom: 15px;
 `;
 
-const StyledNavLink = styled(NavLink)`
-  text-decoration: none;
-  color: white;
-  margin: 0 10px;
+const DataSection = styled.div`
+  margin-top: 20px;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+`;
 
-  &.active {
-    color: gold;
+const DataItem = styled.div`
+  padding: 25px;
+  margin-bottom: 25px;
+  background-color: #f3f3f3;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  line-height: 1.6;
+`;
+
+const LangLine = styled.div`
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+`;
+
+const TranslatedText = styled(LangLine)`
+  color: #0056b3;
+  font-weight: normal;
+`;
+
+const Button = styled.button`
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    background: linear-gradient(135deg, #ff4b2b, #ff416c);
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+  }
+
+  svg {
+    margin-right: 8px;
   }
 `;
 
-=======
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
-const LeftContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex-basis: 40%;
-  align-items: normal;
-  padding: 2rem;
-  height: 100%;
-  margin-top: 5rem;
-`;
+const Home: React.FC = () => {
+  const [translations, setTranslations] = useState<Translation[]>([]);
+  const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
+  const [error, setError] = useState('');
+  const [userId, setUserId] = useState<number | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const { isAuthenticated } = useAuth();
 
-const ContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex-basis: 50%;
-`;
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserInfo();
+    }
+    fetchLatestData('translations');
+    fetchLatestData('transcriptions');
+  }, [isAuthenticated]);
 
-<<<<<<< HEAD
-const App: React.FC = () => {
-  const [onFileChange, setOnFileChange] = useState<File | null>(null);
+  const fetchUserInfo = async () => {
+    try {
+      const response = await fetch('http://localhost:8003/user-info', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+      });
+      if (!response.ok) throw new Error(`Failed to fetch user info: ${await response.text()}`);
+      const userInfo = await response.json();
+      console.log('User Info:', userInfo);
+      setUserId(userInfo.id);
+      setUsername(userInfo.username);
+      setEmail(userInfo.email);
+    } catch (error) {
+      console.error('Failed to fetch user info:', error);
+      setError('Error: Could not fetch user info');
+    }
+  };
 
-  const uploadFileHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      setOnFileChange(files[0]);
+  const fetchLatestData = async (dataType: 'translations' | 'transcriptions') => {
+    try {
+      const response = await fetch(`http://localhost:8002/latest_data/default_user/${dataType}?count=3`);
+      if (!response.ok) throw new Error(`Failed to fetch ${dataType}: ${await response.text()}`);
+      const data = await response.json();
+      if (dataType === 'translations') {
+        setTranslations(
+          data.data.map((item: any) => ({
+            id: item.id,
+            text: item.text,
+            sourceLang: item.source_lang,
+            targetLang: item.target_lang,
+            translatedText: item.translated.join(', '),
+          }))
+        );
+      } else {
+        setTranscriptions(
+          data.data.map((item: any) => ({
+            id: item.id,
+            transcription: item.transcription,
+          }))
+        );
+      }
+    } catch (error) {
+      console.error(`Failed to fetch ${dataType}:`, error);
+    }
+  };
+
+  const deleteData = async (dataType: 'translations' | 'transcriptions', dataId: string) => {
+    try {
+      await fetch(`http://localhost:8002/delete_specific/default_user/${dataType}/${dataId}`, { method: 'DELETE' });
+      if (dataType === 'translations') {
+        setTranslations((prev) => prev.filter((translation) => translation.id !== dataId));
+      } else {
+        setTranscriptions((prev) => prev.filter((transcription) => transcription.id !== dataId));
+      }
+      await fetchLatestData(dataType);
+    } catch (error) {
+      console.error(`Failed to delete ${dataType}:`, error);
+      setError(`Error: Could not delete data`);
     }
   };
 
   return (
-    <MainContainer>
-      <img src={logo} alt="Logo" style={{ height: '100px' }} />
+    <StyledProfileContainer>
+      <Sidebar>
+        <ul>
+          <li><NavLink to="/">Home</NavLink></li>
+          <li><NavLink to="/profile">Profile</NavLink></li>
+          <li><NavLink to="/translate_text">Translate Text</NavLink></li>
+          <li><NavLink to="/transcribe_audio">Transcribe Audio</NavLink></li>
+        </ul>
+      </Sidebar>
 
-      <NavigationContainer>
-        <StyledNavLink to="/">Home</StyledNavLink>
-        <StyledNavLink to="/about">About</StyledNavLink>
-        <StyledNavLink to="/features">Features</StyledNavLink>
-        <StyledNavLink to="/pricing">Pricing</StyledNavLink>
-        <StyledNavLink to="/contact">Contact</StyledNavLink>
-        <StyledNavLink to="/profile">
-          <ButtonComponent buttonLabel="Profile" />
-        </StyledNavLink>
-      </NavigationContainer>
+      <MainContent>
+        <Header>
+          {username ? `Hello ${username}!` : 'Fetching user information...'}
+        </Header>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <div style={{ flexBasis: '33%', display: 'flex' }}>
-        <ButtonComponent buttonLabel="Login / Sign up" />
-        <ButtonComponent buttonLabel="Download App" />
-      </div>
+        <DataSection>
+          <SubHeader>Recent Translations</SubHeader>
+          {translations.length > 0 ? translations.map((translation, index) => (
+            <DataItem key={index}>
+              <LangLine>Source Language: {translation.sourceLang}</LangLine>
+              <LangLine>Original Text: {translation.text}</LangLine>
+              <LangLine>Target Language: {translation.targetLang}</LangLine>
+              <TranslatedText>Translated: {translation.translatedText}</TranslatedText>
+              <Button onClick={() => deleteData('translations', translation.id)}>Delete</Button>
+            </DataItem>
+          )) : <p>No translations found</p>}
+        </DataSection>
 
-      <div style={{ display: 'flex', height: '100%', width: '100%', alignItems: 'start' }}>
-        <LeftContainer>
-          <h1>Transcribe any audio file in any language!</h1>
-          <h2 style={{ color: '#04346C' }}>
-            We have created a translation/transcription tool to help you translate and/or transcribe any of your text and audio files.
-          </h2>
-          <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
-            <NavLink to="/translate_text" style={{ width: '50%' }}>
-              <ButtonComponent size={'100%'} buttonLabel="Translate Text" />
-            </NavLink>
-            <NavLink to="/transcribe_audio" style={{ width: '50%' }}>
-              <ButtonComponent size={'100%'} buttonLabel="Transcribe Audio" />
-            </NavLink>
-          </div>
-        </LeftContainer>
-
-        <ContentContainer>
-          <img src={rightLogo} alt="Right Logo" />
-        </ContentContainer>
-      </div>
-    </MainContainer>
+        <DataSection>
+          <SubHeader>Recent Transcriptions</SubHeader>
+          {transcriptions.length > 0 ? transcriptions.map((transcription, index) => (
+            <DataItem key={index}>
+              {transcription.transcription}
+              <Button onClick={() => deleteData('transcriptions', transcription.id)}>Delete</Button>
+            </DataItem>
+          )) : <p>No transcriptions found</p>}
+        </DataSection>
+      </MainContent>
+    </StyledProfileContainer>
   );
 };
-=======
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
 
-const Label = styled.label`
-  margin: 1rem;
-  font-weight: bold;
-`;
-
-
- const App: React.FC = () => {
-  const [translate, setTranslate] = useState<string>('True');
-
-  const [onFileChange, setOnFileChange] = useState<File | null>(null);
-  const [isSumitted, setIsSumitted] = useState(false);
-
-
-  const handleChangeMethod = (e: React.ChangeEvent<HTMLSelectElement>) => setTranslate(e.target.value);
-
-  const uploadFileHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files;
-    if (file) {
-      setOnFileChange(file[0]);
-    }
-  }
-
-
-  return (
-
-  <MainContainer>
-    <div style={{ flexBasis: '30%', display: 'flex'}}><img src={logo}></img></div>
-    <div style={{display: "flex", justifyContent: "space-evenly", width: '30%', color: "#04346C", flexBasis: '33%'}}>
-      <div>Home</div>
-      <div>About</div>
-      <div>Features</div>
-      <div>Pricing</div>
-      <div>Contract</div>
-    </div>
-    <div style={{ flexBasis: '33%', display: 'flex'}}>
-      <ButtonComponent buttonLabel="Login/ Sign up"></ButtonComponent>
-      <ButtonComponent buttonLabel="Download App"></ButtonComponent>
-    </div>
-
-    <div style={{ display: 'flex', height: '100%', width: '100%', alignItems: 'start'}}>
-    <LeftContainer>
-      <h1>Transcribe any audio file in any language!</h1>
-      <h2 style={{color: '#04346C'}}>We have created an translation/transcription tool<br/> to help you translate and/or transcribe any of your text and audio files.</h2>
-      <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start'}}>
-        <NavLink to="/translate_text" style={{width: '50%'}}>
-            <ButtonComponent size={'100%'} buttonLabel="Translate Text"></ButtonComponent>
-        </NavLink>
-        <NavLink to="/transcribe_audio" style={{width: '50%'}}>
-            <ButtonComponent size={'100%'} buttonLabel="Transcribe Audio"></ButtonComponent>
-        </NavLink>
-      </div>
-    </LeftContainer>
-
-    <ContentContainer>
-      <img src={rightLogo}></img>
-    </ContentContainer>
-    </div>
-  </MainContainer>
-  )
- }
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
-
-export default App;
+export default Home;

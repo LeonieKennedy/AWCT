@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from fastapi import FastAPI, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from audio_transcription_model import TranscriptionModel, Transcription
@@ -13,22 +12,14 @@ app = FastAPI()
 REDIS_DATA_URL = "http://data:8002"
 DEFAULT_USER_ID = "default_user"
 
-=======
-from fastapi import FastAPI, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-from audio_transcription_model import TranscriptionModel, Transcription
-import shutil
-from pathlib import Path
-from tempfile import NamedTemporaryFile
-
-app = FastAPI()
-
-# Added by L
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
 origins = [
+    "http://localhost:8003",
+    "http://localhost:8002",
     "http://localhost:8001",
     "http://localhost:8000",
     "http://localhost:3000",
+    "http://0.0.0.0:8003",
+    "http://0.0.0.0:8002",
     "http://0.0.0.0:8001",
     "http://0.0.0.0:8000",
     "http://0.0.0.0:3000",
@@ -45,7 +36,6 @@ model = TranscriptionModel()
 
 
 @app.post("/transcribe", response_model=Transcription)
-<<<<<<< HEAD
 async def transcribe(audio_file: UploadFile, translate: bool = Form(False)) -> Transcription:
     try:
         print("Received request to transcribe. Translate:", translate)
@@ -69,17 +59,6 @@ async def transcribe(audio_file: UploadFile, translate: bool = Form(False)) -> T
     except Exception as e:
         print(f"Error during transcription: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-=======
-def transcribe(audio_file: UploadFile, translate: bool) -> Transcription:
-    print("Running")
-    print("translate:", translate)
-    tmp_path = save_upload_file_tmp(audio_file)
-    print("temp saved")
-    result = model.api_transcribe(str(tmp_path), translate)
-    tmp_path.unlink()
-    return result
-
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
 
 def save_upload_file_tmp(upload_file: UploadFile) -> Path:
     try:
@@ -90,10 +69,7 @@ def save_upload_file_tmp(upload_file: UploadFile) -> Path:
     finally:
         upload_file.file.close()
     return tmp_path
-<<<<<<< HEAD
 
 @app.get("/test")
 def test_endpoint():
     return {"message": "Test successful"}
-=======
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce

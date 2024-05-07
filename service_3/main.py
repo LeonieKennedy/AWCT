@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import aioredis
 from typing import Optional
 import json
+import uuid
 
 app = FastAPI()
 
@@ -10,10 +11,12 @@ REDIS_HOST = "redis"
 REDIS_PORT = 6379
 
 origins = [
+    "http://localhost:8003",
     "http://localhost:8002",
     "http://localhost:8001",
     "http://localhost:8000",
     "http://localhost:3000",
+    "http://0.0.0.0:8003",
     "http://0.0.0.0:8002",
     "http://0.0.0.0:8001",
     "http://0.0.0.0:8000",
@@ -39,6 +42,11 @@ async def shutdown_event():
 @app.post("/save/{user_id}/{data_type}")
 async def save_data(user_id: str, data_type: str, data: dict = Body(...)):
     key = f"{user_id}:{data_type}"  
+
+    if "id" not in data:
+        entry_id = str(uuid.uuid4())
+        data["id"] = entry_id
+    
     data_json = json.dumps(data)
     await app.state.redis.rpush(key, data_json)
     return {"message": f"{data_type.capitalize()} saved successfully"}
@@ -61,10 +69,36 @@ async def delete_data(user_id: str, data_type: str):
 @app.get("/latest_data/{user_id}/{data_type}")
 async def get_data(user_id: str, data_type: str, limit: int = Query(3, alias="count")):
     key = f"{user_id}:{data_type}" 
-    entries = await app.state.redis.lrange(key, 0, limit - 1)
+    entries = await app.state.redis.lrange(key, -limit, -1)
     if not entries:
         raise HTTPException(status_code=404, detail=f"No {data_type} entries found for this user")
-    return {"data": [json.loads(entry.decode("utf-8")) for entry in entries]}
+    return {"data": [json.loads(entry.decode("utf-8")) for entry in reversed(entries)]}
+
+@app.get("/all_data/{user_id}/{data_type}")
+async def get_all_data(user_id: str, data_type: str):
+    key = f"{user_id}:{data_type}"
+    entries = await app.state.redis.lrange(key, 0, -1)
+    if not entries:
+        raise HTTPException(status_code=404, detail=f"No {data_type} entries found for this user")
+    return {"data": [json.loads(entry.decode("utf-8")) for entry in reversed(entries)]}
+
+@app.delete("/delete_specific/{user_id}/{data_type}/{entry_id}")
+async def delete_specific_data(user_id: str, data_type: str, entry_id: str):
+    key = f"{user_id}:{data_type}"
+    data = await app.state.redis.lrange(key, 0, -1)
+    deleted = False
+    for entry in data:
+        entry_data = json.loads(entry.decode("utf-8"))
+        if entry_data.get("id") == entry_id:
+            await app.state.redis.lrem(key, 0, entry)
+            deleted = True
+            break
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail=f"Entry with ID {entry_id} not found")
+
+    return {"message": f"Entry with ID {entry_id} deleted successfully"}
+
 
 #Test functions
 #@app.get("/")

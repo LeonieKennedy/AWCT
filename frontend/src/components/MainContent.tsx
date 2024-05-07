@@ -1,3 +1,4 @@
+// src/components/MainContent.tsx
 import React, { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
@@ -11,10 +12,12 @@ const StyledMainContent = styled.div`
   font-size: 16px;
   line-height: 1.5;
   border-radius: 8px;
+  margin-bottom: 120px;
+  border: 1px solid #e6e6e6;
 `;
 
 interface Props {
-    children?: ReactNode;
+  children?: ReactNode;
 }
 
 const MainContent: FC<Props> = ({ children }) => {

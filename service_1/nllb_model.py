@@ -11,19 +11,11 @@ import fasttext
 from nltk import sent_tokenize, download, data
 from pydantic import BaseModel
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
 class LangDetectionOutput(str, Enum):
     alpha = 'alpha'
     flores = 'flores'
     human_readable = 'human readable'
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
 class Translation(BaseModel):
     target_lang: str
     source_lang: str
@@ -31,10 +23,6 @@ class Translation(BaseModel):
     translated: list[str]
     translation_time: float
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
 class FTLangDetect:
     FTLANG_CACHE = os.getenv("FTLANG_CACHE", "/tmp/fasttext-langdetect")
 
@@ -65,11 +53,7 @@ class FTLangDetect:
         return model
 
     def detect_language(self, text: str, k: int = 1, shortcode=False) -> Dict[str, float]:
-<<<<<<< HEAD
         labels, scores = self._model.predict(text.replace("\n", " "), k)
-=======
-        labels, scores = self._model.predict(text.replace("\n"," "), k)
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
         if shortcode:
             labels = [x.replace("__label__", '') for x in labels]
         else:
@@ -77,10 +61,6 @@ class FTLangDetect:
         scores = [min(float(x), 1.0) for x in scores]
         return dict(zip(labels, scores))
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
 class Model:
     FLORES_LANG_CODE_MAPPING_URL = 'https://github.com/facebookresearch/flores/blob/main/flores200/README.md#languages-in-flores-200'
     FLORES_CSV_LOCATION = "FLORES_200_LANG_MAPPING.csv"
@@ -89,13 +69,8 @@ class Model:
 
     def __init__(self):
         self._df_flores = Model._get_flores_df()
-<<<<<<< HEAD
         self._model = AutoModelForSeq2SeqLM.from_pretrained(self.NLLB_MODEL, resume_download=True)
         self._tokenizer = AutoTokenizer.from_pretrained(self.NLLB_MODEL, resume_download=True)
-=======
-        self._model = AutoModelForSeq2SeqLM.from_pretrained(self.NLLB_MODEL)
-        self._tokenizer = AutoTokenizer.from_pretrained(self.NLLB_MODEL)
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
         self._ft_lang_detect = FTLangDetect()
 
     @staticmethod
@@ -133,10 +108,6 @@ class Model:
                                         src_lang=src_lang,
                                         tgt_lang=tgt_lang,
                                         max_length=max_length)
-<<<<<<< HEAD
-=======
-
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
         result = translation_pipeline(text)
         return result[0]['translation_text']
 
@@ -147,21 +118,13 @@ class Model:
             download('punkt')
         langs = self._ft_lang_detect.detect_language(text).keys()
         if any(lang in ['ar', 'jp', 'ko', 'zh'] for lang in langs):
-<<<<<<< HEAD
             return list(re.findall(u'[^!?。\\.]+[!?。\\.]*', text, flags=re.U))
-=======
-            return list(re.findall(u'[^!?。\.]+[!?。\.]*', text, flags=re.U))
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
         return sent_tokenize(text)
 
     def translate(self, text: str, target_lang: str = "eng_Latn", source_lang: str = None) -> Translation:
         start_time = datetime.now()
         results = []
         text_split = self.split_sentances(text)
-<<<<<<< HEAD
-=======
-
->>>>>>> c787479d6ba7f7fe594bdbde30b87c85e2048cce
         for sentance in text_split:
             if not source_lang:
                 try:
